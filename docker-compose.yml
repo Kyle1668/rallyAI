@@ -22,7 +22,6 @@ services:
     container_name: rallyay-data-pipeline-notebook
     volumes:
       - "./pipeline:/rallyai/spark-etl-pipeline"
-    # restart: always
     env_file: .env
     ports:
       - "8888:8888"
