@@ -16,4 +16,5 @@ USER jovyan
 
 EXPOSE 8888
 
-CMD [ "jupyter", "notebook", "--allow-root" ]
+# CMD [ "jupyter", "notebook", "--allow-root" ]
+CMD [ "python", "spark.py" ]
