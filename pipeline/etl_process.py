@@ -5,7 +5,7 @@ Kyle O'Brien - kdobrien@ucsc.edu
 
 import os
 import psycopg2
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrameWriter
 from pyspark.sql.types import (StructField, StructType, StringType,
                                IntegerType, FloatType, DateType)
 
@@ -35,14 +35,32 @@ def write_dataframe_to_postgres(arg_data_frame, table_name):
         arg_data_frame {DataFrame} -- The dataframe who's contents will be written to the DB
         table_name {String} -- The DB table that will be written to
     """
-    arg_data_frame.write.jdbc(url="jdbc:postgresql://database:5432/docker",
-                              table=table_name,
-                              mode="overwrite",
-                              properties={
-                                  "driver": 'org.postgresql.Driver',
-                                  "user": os.environ["POSTGRES_USER"],
-                                  "password": os.environ["POSTGRES_PASSWORD"]
-                              })
+
+    if os.environ.get("ENV") == "production":
+        db_address = os.environ["DB_ADDRESS"]
+        db_user = os.environ["POSTGRES_USER"]
+        db_password = os.environ["POSTGRES_PASSWORD"]
+
+        connection_string = f"jdbc:postgresql://{db_address}/{table_name}"
+        connection_properties = {
+            "password": "docker",
+            "driver": "org.postgresql.Driver",
+            "user": "docker"
+        }
+
+        arg_data_frame.write.jdbc(url=db_address,
+                                  table=table_name,
+                                  mode="overwrite",
+                                  properties=connection_properties)
+    else:
+        arg_data_frame.write.jdbc(url="jdbc:postgresql://database:5432/docker",
+                                  table=table_name,
+                                  mode="overwrite",
+                                  properties={
+                                      "driver": 'org.postgresql.Driver',
+                                      "user": "docker",
+                                      "password": "docker"
+                                  })
 
 
 def generate_data_frame_from_csv(csv_file_path):
@@ -90,12 +108,15 @@ if __name__ == "__main__":
         .config("spark.jars", "/rallyai/spark-etl-pipeline/jars/postgresql-42.2.8.jar") \
         .getOrCreate() \
 
+    log4jLogger = spark._jvm.org.apache.log4j
+    log = log4jLogger.LogManager.getLogger(__name__)
+
     raw_dataset_path = os.environ["CSV_FILE_PATH"]
     data_frame = generate_data_frame_from_csv(raw_dataset_path)
 
     # Print the schema to the console
     data_frame.printSchema()
 
-    results = spark.sql("SELECT * FROM stocks WHERE symbol='MSFT'")
+    results = spark.sql("SELECT * FROM stocks")
     db_connection_cursor = init_postgres_connection()
     write_dataframe_to_postgres(results, "stocks")
