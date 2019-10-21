@@ -1,3 +1,8 @@
+"""
+RalliAI - UCSC CSE 115A - Fall 2019
+Kyle O'Brien - kdobrien@ucsc.edu
+"""
+
 import os
 import psycopg2
 from pyspark.sql import SparkSession
@@ -41,6 +46,15 @@ def write_dataframe_to_postgres(arg_data_frame, table_name):
 
 
 def generate_data_frame_from_csv(csv_file_path):
+    """This method creates a DataFrame schema and then reads 
+       the values from an argued CSV file into a DataFrame.
+    
+    Arguments:
+        csv_file_path {String} -- The relative path tot he CSV file to be read.
+    
+    Returns:
+        DataFrame -- The new Spark DataFrame containign the files contents.
+    """
     data_schema = [
         StructField("ticker", StringType(), True),
         StructField("open", FloatType()),
@@ -68,6 +82,8 @@ def generate_data_frame_from_csv(csv_file_path):
 
 
 if __name__ == "__main__":
+    """Program Driver
+    """
     spark = SparkSession.builder \
         .master("local[4]") \
         .appName("rallyai_etl_pipeline") \
