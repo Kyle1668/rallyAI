@@ -6,6 +6,7 @@
 *.csv
 *.dat
 *.efx
+*.crc
 *.gbr
 *.key
 *.pps
@@ -250,7 +251,7 @@ typings/
 # nuxt.js build output
 .nuxt
 
-# react / gatsby 
+# react / gatsby
 public/
 
 # vuepress build output

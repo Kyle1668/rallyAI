@@ -20,7 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-  spark_notebook:
+  etl_pipeline:
     build: ./pipeline
     container_name: rallyay-data-pipeline-notebook
     volumes:
