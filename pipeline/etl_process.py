@@ -2,6 +2,14 @@
 RalliAI - UCSC CSE 115A - Fall 2019
 """
 
+# env vars with sample values
+# SPARK_MASTER=local[8]
+# POSTGRES_USER=docker
+# POSTGRES_PASSWORD=docker
+# DB_TABLE=docker
+# DB_ADDRESS=database:5432
+# CSV_FILE_PATH=sample_data/historical_stock_prices.csv
+
 import os
 import psycopg2
 from pyspark.sql import SparkSession, DataFrameWriter
