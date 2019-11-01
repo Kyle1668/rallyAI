@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rallyai-api-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: rallyai-api
+  template:
+    metadata:
+      labels:
+        app: rallyai-api
+    spec:
+      containers:
+        - name: rallyai-api
+          image: rallyai/stocks-api:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3000
