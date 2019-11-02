@@ -6,7 +6,6 @@
 *.csv
 *.dat
 *.efx
-*.crc
 *.gbr
 *.key
 *.pps
@@ -251,7 +250,7 @@ typings/
 # nuxt.js build output
 .nuxt
 
-# react / gatsby
+# react / gatsby 
 public/
 
 # vuepress build output
@@ -800,7 +799,5 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
-
-.vscode/
 
 # End of https://www.gitignore.io/api/git,vim,node,data,linux,macos,python,dotenv,windows,database,jetbrains,terraform,visualstudio,visualstudiocode

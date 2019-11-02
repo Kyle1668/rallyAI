@@ -8,8 +8,11 @@ services:
     restart: always
     env_file: .env
     environment:
+      CSV_FILE_PATH: ${CSV_FILE_PATH}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_ADDRESS: ${DB_ADDRESS}
+      DB_TABLE: ${DB_TABLE}
     ports:
       - "5432:5432"
     healthcheck:
@@ -17,3 +20,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  etl_pipeline:
+    build: ./pipeline
+    container_name: rallyay-data-pipeline-notebook
+    volumes:
+      - "./pipeline:/rallyai/spark-etl-pipeline"
+    env_file: .env
+    ports:
+      - "8888:8888"
