@@ -8,4 +8,4 @@ spec:
   type: LoadBalancer
   ports:
     - port: 5000
-      targetPort: 4000
+      targetPort: 3000
