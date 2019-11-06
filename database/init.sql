@@ -7,5 +7,5 @@ CREATE TABLE stocks
     opening_price REAL,
     highest_price REAL,
     lowest_price REAL,
-    volume_in_millions REAL
+    volume_in_millions VARCHAR(10)
 );
