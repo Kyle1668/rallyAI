@@ -80,29 +80,10 @@ def generate_data_frame_from_csv(csv_file_path):
     Returns:
         DataFrame -- The new Spark DataFrame containign the files contents.
     """
-    data_schema = [
-        StructField("ticker", StringType(), True),
-        StructField("open", FloatType(), True),
-        StructField("close", FloatType(), True),
-        StructField("adj_close", FloatType(), True),
-        StructField("low", FloatType(), True),
-        StructField("high", FloatType(), True),
-        StructField("volume", FloatType(), True),
-        StructField("date", DateType(), True)
-    ]
-
     final_struct = StructType(fields=data_schema)
-
-    data_frame = spark.read.csv(csv_file_path, schema=final_struct)
-    data_frame = data_frame.withColumnRenamed("ticker", "symbol")
-    data_frame = data_frame.withColumnRenamed("open", "opening_price")
-    data_frame = data_frame.withColumnRenamed("close", "closing_price")
-    data_frame = data_frame.withColumnRenamed("low", "lowest_price")
-    data_frame = data_frame.withColumnRenamed("high", "highest_price")
-    data_frame = data_frame.withColumn("volume_in_millions",
-                                       data_frame["volume"] / 1000000)
+    data_frame = spark.read.csv(csv_file_path, inferSchema=True, header=True)
     data_frame.createOrReplaceTempView("stocks")
-
+    
     return data_frame
 
 
@@ -127,9 +108,8 @@ if __name__ == "__main__":
     # Print the schema to the console
     data_frame.printSchema()
 
-    results = spark.sql(
-        "SELECT * FROM stocks WHERE symbol IS NOT  NULL AND date IS NOT NULL")
+    results = spark.sql("SELECT * FROM stocks")
     db_connection_cursor = init_postgres_connection()
-    write_dataframe_to_postgres(results, "stocks")
+    write_dataframe_to_postgres(data_frame, "stocks")
 
-    results.write.csv("model_training_data", mode="overwrite")
+    data_frame.write.csv("model_training_data", mode="overwrite")
