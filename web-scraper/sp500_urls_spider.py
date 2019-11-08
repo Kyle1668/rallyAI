@@ -1,4 +1,4 @@
-# stocks_scraper.py
+# sp500_urls_spider.py
 
 import os
 import platform
