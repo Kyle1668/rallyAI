@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: redis-cache
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 3000
       targetPort: 6379
