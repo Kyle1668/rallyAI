@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cache-service
+spec:
+  selector:
+    app: redis-cache
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 6379
