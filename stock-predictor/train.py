@@ -78,6 +78,7 @@ def main():
     model_json = model.to_json()
     with open('./modelBin/' + companyCode + '/model.json','w+') as json_file:
         json_file.write(model_json)
+        json_file.close()
     model.save_weights('./modelBin/' + companyCode + '/model.h5')
 
 if __name__ == '__main__':
