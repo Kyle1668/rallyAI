@@ -20,6 +20,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  cache:
+    image: redis:5.0.6-alpine
+    ports:
+      - "6379:6379"
   etl_pipeline:
     build: ./pipeline
     container_name: rallyay-data-pipeline-notebook
