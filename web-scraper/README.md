@@ -1,41 +1,37 @@
-# WEB-SCRAPER
+# web-scraper
 
 ## info
 
-boilerplate for the webscraper we'll be using to gather data on market trends
-
-stocks_spider.py is only being shown as an example right now
+webscraper we'll be using to gather data on market trends
 
 ## dependencies
 
 Python : version = 3.7.4
 
+`python3 -m pip install --user virtualenv`
+
+`python3 -m venv env`
+
 `pip3 install -r requirements.txt`
 
-## commands
+## usage
 
-Run a spider to crawl a webpage and direct the output to a file
+### sp500 urls spider
 
-`scrapy crawl <spider-name> -o <output-file>`
+Run the urls spider using python3 and redirect the output to either a .json or .jl file
 
-Run commands live from scrapy's shell against some url
+`python3 sp500_urls_spider.py > urls/sp500Urls.jl`
 
-`scrapy shell <url>`
+### sp500 data spider
 
-While the shell is running you can execute scrapy commands like the following
+company_name
+market_date
+closing_price
+opening_price
+highest_price
+lowest_price
+volume_in_millions
 
-`response.css('title::text').getall()`
+## Selenium Notes
 
-`table = response.css('table')[0]`
-
-`row = table.css('tr')[0]`
-
-## demo
-
-`cd web-scraper/stocks_scraper/`
-
-`scrapy crawl stocks -o test-data/stocks.jl`
-
-## notes
-
-Scrapy tutorial straight from their documentation : https://docs.scrapy.org/en/latest/intro/tutorial.html
+useful exceptions : ElementClickInterceptedException
