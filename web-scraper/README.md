@@ -31,3 +31,7 @@ opening_price
 highest_price
 lowest_price
 volume_in_millions
+
+## Selenium Notes
+
+useful exceptions : ElementClickInterceptedException

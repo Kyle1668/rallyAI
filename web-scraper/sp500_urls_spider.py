@@ -7,20 +7,27 @@ import time
 
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoAlertPresentException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 
 if __name__ == "__main__":
     url = 'https://www.investing.com/equities/'
     options = Options()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--start-maximized")
     options.add_argument("--headless")
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
 
-    browser = webdriver.Chrome(options=options)
-    browser.get(url)
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
 
-    optionSelector = browser.find_element_by_id('stocksFilter')
+    optionSelector = driver.find_element_by_id('stocksFilter')
     options = optionSelector.find_elements_by_tag_name('option')
     optionToSelect = None
 
@@ -30,9 +37,10 @@ if __name__ == "__main__":
             break
 
     option.click()
-    time.sleep(10)
-
-    sp500StockTable = browser.find_element_by_id('cross_rate_markets_stocks_1')
+    # time.sleep(10)
+    sp500StockTable = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((By.ID, "cross_rate_markets_stocks_1")))
+    #sp500StockTable = driver.find_element_by_id('cross_rate_markets_stocks_1')
     sp500StockTable = sp500StockTable.find_element_by_tag_name('tbody')
 
     sp500Urls = {}
@@ -50,4 +58,4 @@ if __name__ == "__main__":
 
     print(sp500Urls)
 
-    browser.quit()
+    driver.quit()
