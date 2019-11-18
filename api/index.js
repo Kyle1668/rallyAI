@@ -64,6 +64,8 @@ app.use(
   })
 );
 
+const serverPort = process.env.PORT || 3000;
+
 app.listen(3000, () =>
-  console.log("Express GraphQL Server Now Running On localhost:3000/graphql")
+  console.log(`Express GraphQL Server Now Running On localhost:${serverPort}/graphql`)
 );
