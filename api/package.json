@@ -4,7 +4,8 @@
   "description": "Group Project for CSE 115A",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
+    "start-dev": "ENV=dev nodemon --exec babel-node index.js",
+    "start-prod": "ENV=prod babel-node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

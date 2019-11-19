@@ -1,20 +1,21 @@
 import express from 'express';
 import express_graphql from 'express-graphql';
-import {
-  buildSchema
-} from 'graphql';
+import { buildSchema } from 'graphql';
+import dotenv from 'dotenv';
 
 // Enviroment variables
-import dotenv from 'dotenv';
-dotenv.config();
+if (process.env.ENV === "dev") {
+  dotenv.config();
+  console.log("\x1b[35m%s\x1b[0m","Dev Mode, Initializing dotenv library");
+}
 
 var knex = require('knex')({
   client: 'pg',
   connection: {
-    host : '127.0.0.1',
-    user : 'joseph',
-    password : 'password',
-    database : 'rallyai'
+    host : process.env.DB_HOST,
+    user : process.env.DB_USER,
+    password : process.env.DB_PASS,
+    database : process.env.DB_NAME
   }
 });
 
@@ -31,7 +32,6 @@ const schema = buildSchema(`
     lowest_price: Float
     volume_in_millions: String
   }
-
   type Query {
     statusCode: Int
     error: Boolean
@@ -48,7 +48,6 @@ const getDataFromSymbol = async (symbol) => {
 const root = {
   results: async ({stockSymbol}) => {
     const returnedData = await getDataFromSymbol(stockSymbol);
-    console.log(returnedData);
     return returnedData;
   }
 };
@@ -66,6 +65,4 @@ app.use(
 
 const serverPort = process.env.PORT || 3000;
 
-app.listen(3000, () =>
-  console.log(`Express GraphQL Server Now Running On localhost:${serverPort}/graphql`)
-);
+app.listen(serverPort, () => console.log("\x1b[5m\x1b[35m%s\x1b[0m",`Express GraphQL Server Now Running On localhost:${serverPort}/graphql`));
