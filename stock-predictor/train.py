@@ -27,7 +27,7 @@ def queryData(companyCode):
                                         port="",
                                         database="postgres_db")
         cursor = connection.cursor()
-        postgreSQL_select_Query  = "select * from stock WHERE Name = " + companyCode
+        postgreSQL_select_Query  = "select * from stocks WHERE company_name = " + companyCode
         cursor.execute(postgreSQL_select_Query)
         companyData = cursor.fetchall()
     except(Exception, psycopg2.Error) as error:
@@ -37,7 +37,6 @@ def queryData(companyCode):
             cursor.close()
             connection.close()
     return (companyData)
-
 
 # Process data into 7 day look back slices
 def processData(data,lb):
@@ -53,7 +52,7 @@ def main():
     companyCode = str(sys.argv[1])
 
     # Query company data from database
-    # [(date, open, high, low, close, volume, Name), (date, open, high, low, close, volume, Name), ...]
+    # [(company_name, market_date, closing_price, opening_price, highest_price, lowest_price, volume_in_millions, perent_change), ...]
     companyData = queryData(companyCode)
 
     # format company data
