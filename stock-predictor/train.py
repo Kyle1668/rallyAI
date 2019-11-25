@@ -8,6 +8,7 @@
 # * https://towardsdatascience.com/recurrent-neural-networks-by-example-in-python-ffd204f99470
 # * https://towardsdatascience.com/choosing-the-right-hyperparameters-for-a-simple-lstm-using-keras-f8e9ed76f046
 # Library for manipulating, formatting, and cleaning the data
+import psycopg2
 import sys
 import os
 import pandas as pd
@@ -16,6 +17,27 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dense,Dropout
 import matplotlib.pyplot as plt
+
+
+def queryData(companyCode):
+    try:
+        connection = psycopg2.connect(user="",
+                                        password="",
+                                        host="",
+                                        port="",
+                                        database="postgres_db")
+        cursor = connection.cursor()
+        postgreSQL_select_Query  = "select * from stock WHERE Name = " + companyCode
+        cursor.execute(postgreSQL_select_Query)
+        companyData = cursor.fetchall()
+    except(Exception, psycopg2.Error) as error:
+        print (error)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+    return (companyData)
+
 
 # Process data into 7 day look back slices
 def processData(data,lb):
@@ -26,12 +48,21 @@ def processData(data,lb):
     return np.array(X),np.array(Y)
 
 def main():
-    # Need to read data from Joseph's database
+
     print ("Current Company Code: " + str(sys.argv[1]))
     companyCode = str(sys.argv[1])
 
-    data = pd.read_csv('./input/all_stocks_5yr.csv')
-    closeData = data[data['Name']== companyCode].close
+    # Query company data from database
+    # [(date, open, high, low, close, volume, Name), (date, open, high, low, close, volume, Name), ...]
+    companyData = queryData(companyCode)
+
+    # format company data
+    # Code Here
+    # closeData = 
+
+    # data = pd.read_csv('./input/all_stocks_5yr.csv')
+    # closeData = data[data['Name']== companyCode].close
+
     closeData = closeData.values.reshape(closeData.shape[0], 1)
     scl = MinMaxScaler()
     closeData = scl.fit_transform(closeData)
