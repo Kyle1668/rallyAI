@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 pyspark = "*"
 psycopg2 = "*"
+yapf = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.7"

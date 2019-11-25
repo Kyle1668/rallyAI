@@ -21,16 +21,15 @@ def init_postgres_connection():
     """Init the connection to the Postgres database using env vars
 
     Returns:
-        [cursor] -- [A cursor for the DB connection for running queries against]
+        [cursor] -- [Cursor for the DB connection for running queries against]
     """
     db_host = "database"
     db_name = os.environ["POSTGRES_USER"]
     db_user = os.environ["POSTGRES_USER"]
     db_password = os.environ["POSTGRES_PASSWORD"]
 
-    postgres_connection = psycopg2.connect(
-        f"host={db_host} dbname={db_name} user={db_user} password={db_password}"
-    )
+    connection_config = f"host={db_host} dbname={db_name} user={db_user} password={db_password}"
+    postgres_connection = psycopg2.connect(connection_config)
 
     return postgres_connection.cursor()
 
@@ -39,8 +38,9 @@ def write_dataframe_to_postgres(arg_data_frame, table_name):
     """Loads an argues Spark dataframe to the PG database.
 
     Arguments:
-        arg_data_frame {DataFrame} -- The dataframe who's contents will be written to the DB
-        table_name {String} -- The DB table that will be written to
+        arg_data_frame {DataFrame} -- The dataframe who's contents will be
+        written to the DB table_name {String} -- The DB table
+        that will be written to
     """
 
     if os.environ.get("ENV") == "production":
@@ -83,7 +83,7 @@ def generate_data_frame_from_csv(csv_file_path):
     final_struct = StructType(fields=data_schema)
     data_frame = spark.read.csv(csv_file_path, inferSchema=True, header=True)
     data_frame.createOrReplaceTempView("stocks")
-    
+
     return data_frame
 
 
@@ -107,9 +107,12 @@ if __name__ == "__main__":
 
     # Print the schema to the console
     data_frame.printSchema()
+    # query = "SELECT * FROM stocks WHERE company_name IS NOT  NULL AND market_date IS NOT NULL"
+    # results = spark.sql(query)
 
-    results = spark.sql("SELECT * FROM stocks")
+    # Write to Postgres
     db_connection_cursor = init_postgres_connection()
-    write_dataframe_to_postgres(data_frame, "stocks")
 
+    # Write to CSV
+    write_dataframe_to_postgres(data_frame, "stocks")
     data_frame.write.csv("model_training_data", mode="overwrite")
