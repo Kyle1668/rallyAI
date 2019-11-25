@@ -12,10 +12,10 @@ if (process.env.ENV === "dev") {
 var knex = require('knex')({
   client: 'pg',
   connection: {
-    host : process.env.DB_HOST,
-    user : process.env.DB_USER,
-    password : process.env.DB_PASS,
-    database : process.env.DB_NAME
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
   }
 });
 
@@ -35,7 +35,8 @@ const schema = buildSchema(`
   type Query {
     statusCode: Int
     error: Boolean
-    results(stockSymbol: String): [Stock]
+    fromSymbol(stockSymbol: String): [Stock]
+    fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]
   }
 `);
 
@@ -44,10 +45,22 @@ const getDataFromSymbol = async (symbol) => {
   return data;
 }
 
+
+const getFromDateRange = async (symbol, beginDate, endDate) => {
+  const data = await knex('stocks')
+    .where('symbol', symbol)
+    .whereBetween('market_date', [beginDate, endDate]);
+  return data;
+}
+
 // Root resolver
 const root = {
-  results: async ({stockSymbol}) => {
+  fromSymbol: async ({stockSymbol}) => {
     const returnedData = await getDataFromSymbol(stockSymbol);
+    return returnedData;
+  },
+  fromDateRange: async ({stockSymbol, beginDate, endDate}) => {
+    const returnedData = await getFromDateRange(stockSymbol,beginDate, endDate);
     return returnedData;
   }
 };
