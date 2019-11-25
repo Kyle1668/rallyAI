@@ -9,7 +9,7 @@ if (process.env.ENV === "dev") {
   console.log("\x1b[35m%s\x1b[0m","Dev Mode, Initializing dotenv library");
 }
 
-var knex = require('knex')({
+const knex = require('knex')({
   client: 'pg',
   connection: {
     host: process.env.DB_HOST,
@@ -32,11 +32,19 @@ const schema = buildSchema(`
     lowest_price: Float
     volume_in_millions: String
   }
+
+  type PredictiveStock {
+    symbol: String
+    predicted_price: Float
+    date: String
+  }
+
   type Query {
     statusCode: Int
     error: Boolean
     fromSymbol(stockSymbol: String): [Stock]
     fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]
+    fromPrediction(stockSymbol: String): PredictiveStock
   }
 `);
 
@@ -45,12 +53,19 @@ const getDataFromSymbol = async (symbol) => {
   return data;
 }
 
-
 const getFromDateRange = async (symbol, beginDate, endDate) => {
   const data = await knex('stocks')
     .where('symbol', symbol)
     .whereBetween('market_date', [beginDate, endDate]);
   return data;
+}
+
+// Predictive model
+const getFromPredictionModel = async (symbol) => {
+
+  // const prediction = // call the model
+
+  // return prediction
 }
 
 // Root resolver
@@ -61,6 +76,10 @@ const root = {
   },
   fromDateRange: async ({stockSymbol, beginDate, endDate}) => {
     const returnedData = await getFromDateRange(stockSymbol,beginDate, endDate);
+    return returnedData;
+  },
+  fromPrediction: async ({stockSymbol}) => {
+    const returnedData = await getFromPredictionModel(stockSymbol);
     return returnedData;
   }
 };
