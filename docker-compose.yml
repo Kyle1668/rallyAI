@@ -7,12 +7,6 @@ services:
       - "./database/:/docker-entrypoint-initdb.d"
     restart: always
     env_file: .env
-    environment:
-      CSV_FILE_PATH: ${CSV_FILE_PATH}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      DB_ADDRESS: ${DB_ADDRESS}
-      DB_TABLE: ${DB_TABLE}
     ports:
       - "5432:5432"
     healthcheck:
@@ -22,8 +16,19 @@ services:
       retries: 3
   cache:
     image: redis:5.0.6-alpine
+    container_name: rallyay-redis-cache
     ports:
       - "6379:6379"
+    restart: always
+    depends_on:
+      - database
+  api:
+    build: ./api
+    container_name: rallyay-graphql-api
+    env_file: .env
+    ports:
+      - "3000:3000"
+    restart: always
   etl_pipeline:
     build: ./pipeline
     container_name: rallyay-data-pipeline-notebook
