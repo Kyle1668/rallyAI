@@ -23,3 +23,16 @@ steps:
 - script: npm run test
   displayName: 'run API unit tests'
   workingDirectory: ./api
+
+- task: Docker@2
+  displayName: 'test building graphql api docker image'
+  inputs:
+    repository: 'https://hub.docker.com/repository/docker/rallyai/stocks-api'
+    command: 'build'
+    Dockerfile: './api/Dockerfile'
+
+- task: Docker@2
+  displayName: 'test building etl pipeline docke rimage'
+  inputs:
+    command: 'buildAndPush'
+    Dockerfile: './pipeline/Dockerfile'
