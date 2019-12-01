@@ -4,42 +4,29 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- '*'
+  - "*"
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 steps:
-# - task: NodeTool@0
-#   inputs:
-#     versionSpec: '10.x'
-#   displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.x"
+    displayName: "Install Node.js"
 
-# - script: |
-#     npm install
-#   displayName: 'npm install and build'
-#   workingDirectory: ./api
+  - script: |
+      npm install
+    displayName: "npm install and build"
+    workingDirectory: ./api
 
-# - script: npm run test
-#   displayName: 'run API unit tests'
-#   workingDirectory: ./api
+  - script: npm run test
+    displayName: "run API unit tests"
+    workingDirectory: ./api
 
-- task: Docker@2
-  displayName: 'test building graphql api docker image'
-  inputs:
-    repository: 'rallyai/stocks-api'
-    command: 'build'
-    Dockerfile: './api/Dockerfile'
-
-# - task: Docker@2
-#   displayName: 'test building etl pipeline docker image'
-#   inputs:
-#     command: 'build'
-#     Dockerfile: './pipeline/Dockerfile'
-
-- task: Docker@2
-  inputs:
-    containerRegistry: 'RallyAI DockerHub Connection'
-    tags: 'latest'
-    repository: 'rallyai/stocks'
-    command: 'push'
+  - task: Docker@2
+    displayName: "test building graphql api docker image"
+    inputs:
+      repository: "rallyai/stocks-api"
+      command: "build"
+      Dockerfile: "./api/Dockerfile"
