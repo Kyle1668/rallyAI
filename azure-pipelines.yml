@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- '*'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -32,7 +32,13 @@ steps:
     Dockerfile: './api/Dockerfile'
 
 - task: Docker@2
-  displayName: 'test building etl pipeline docke rimage'
+  displayName: 'test building etl pipeline docker image'
   inputs:
     command: 'build'
     Dockerfile: './pipeline/Dockerfile'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'RallyAI DockerHub Connection'
+    repository: 'rallyai/stocks'
+    command: 'push'
