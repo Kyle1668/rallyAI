@@ -80,8 +80,19 @@ def generate_data_frame_from_csv(csv_file_path):
     Returns:
         DataFrame -- The new Spark DataFrame containign the files contents.
     """
+    data_schema = [
+        StructField("company_name", StringType(), True),
+        StructField("market_date", StringType(), True),
+        StructField("closing_price", FloatType(), True),
+        StructField("opening_price", FloatType(), True),
+        StructField("highest_price", FloatType(), True),
+        StructField("lowest_price", FloatType(), True),
+        StructField("volume", StringType(), True),
+        StructField("percent_change", StringType(), True)
+    ]
+
     final_struct = StructType(fields=data_schema)
-    data_frame = spark.read.csv(csv_file_path, inferSchema=True, header=True)
+    data_frame = spark.read.csv(csv_file_path, header=True, schema=final_struct)
     data_frame.createOrReplaceTempView("stocks")
 
     return data_frame
@@ -107,8 +118,6 @@ if __name__ == "__main__":
 
     # Print the schema to the console
     data_frame.printSchema()
-    # query = "SELECT * FROM stocks WHERE company_name IS NOT  NULL AND market_date IS NOT NULL"
-    # results = spark.sql(query)
 
     # Write to Postgres
     db_connection_cursor = init_postgres_connection()
