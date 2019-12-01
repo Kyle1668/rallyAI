@@ -30,7 +30,6 @@ steps:
     repository: 'rallyai/stocks-api'
     command: 'build'
     Dockerfile: './api/Dockerfile'
-    tags: latest
 
 # - task: Docker@2
 #   displayName: 'test building etl pipeline docker image'
