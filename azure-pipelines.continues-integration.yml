@@ -10,19 +10,19 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+# - task: NodeTool@0
+#   inputs:
+#     versionSpec: '10.x'
+#   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-  displayName: 'npm install and build'
-  workingDirectory: ./api
+# - script: |
+#     npm install
+#   displayName: 'npm install and build'
+#   workingDirectory: ./api
 
-- script: npm run test
-  displayName: 'run API unit tests'
-  workingDirectory: ./api
+# - script: npm run test
+#   displayName: 'run API unit tests'
+#   workingDirectory: ./api
 
 - task: Docker@2
   displayName: 'test building graphql api docker image'
