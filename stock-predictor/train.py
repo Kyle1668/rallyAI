@@ -23,11 +23,11 @@ def queryData(companyCode):
     connection = None
     closeData = None
     try:
-        connection = psycopg2.connect(user="docker",
-                                        password="docker",
-                                        host="13.92.251.34",
-                                        port="5432",
-                                        database="docker")
+        connection = psycopg2.connect(user="",
+                                        password="",
+                                        host="",
+                                        port="",
+                                        database="")
         cursor = connection.cursor()
         postgreSQL_select_Query  = "SELECT closing_price FROM stocks WHERE company_name = '{}'".format(companyCode)
         closeData = pd.read_sql(postgreSQL_select_Query, connection)
