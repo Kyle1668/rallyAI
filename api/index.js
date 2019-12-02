@@ -2,6 +2,7 @@ import express from 'express';
 import express_graphql from 'express-graphql';
 import { buildSchema } from 'graphql';
 import dotenv from 'dotenv';
+import path from 'path';
 import * as tf from '@tensorflow/tfjs-node';
 import { MinMaxScaler } from 'machinelearn/preprocessing';
 
@@ -46,7 +47,7 @@ const schema = buildSchema(`
     error: Boolean
     fromSymbol(stockSymbol: String): [Stock]
     fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]
-    fromPrediction(stockSymbol: String, closingPrice: Float): PredictiveStock
+    fromPrediction(stockSymbol: String): PredictiveStock
   }
 `);
 
@@ -69,24 +70,45 @@ const getFromDateRange = async (symbol, beginDate, endDate) => {
 }
 
 // Predictive model
-const getFromPredictionModel = async (symbol, closingPrice) => {
+const getFromPredictionModel = async (symbol) => {
 
-  const model = await tf.loadLayersModel("file:///Users/joseph/Desktop/School/cse115a/rallyAI/stock-predictor/modelBin/AutoZone/model.json");
+  // Grabbing data to transform and array manipulations
+  const closeData = await knex('stocks').where('company_name', symbol);
+
+  if (closeData.length === 0) {
+    throw new Error(`${symbol} isn't apart of S&P 500.`);
+  }
+  
+  const companies = [ "AMD", "Comcast", "Pfizer",
+  "Intel",
+  "Apple",
+  "Micron",
+  "Microsoft",
+  "Cisco",
+  "Facebook",
+  "AutoZone"];
+
+  if (!companies.includes(symbol)) {
+    throw new Error("Companies model hasn't been trained!");
+  }
+
+  const projectDir = path.join(__dirname, '../');
+  const model = await tf.loadLayersModel(`file://${projectDir}/stock-predictor/modelBin/${symbol}/model.json`);
   
   const minmaxScaler = new MinMaxScaler({ featureRange: [0,1] });
 
-  // Official Function for Database
-  // const closeData = await knex.select('closing_price').from('stocks').where('company_name', symbol);
+  // array manipulations for getting 7 day
+  const closeDataSortedDates = (closeData.sort((a,b)=> new Date(b.market_date) - new Date(a.market_date))).slice(0,7);
+  const closeDataPriceOnly = closeDataSortedDates.map(v => v.closing_price).reverse();
 
-  // Mock function
-  const closeDataMock = await knex.select('closing_price').from('stocks').where('company_name', 'AutoZone');
 
-  let closeDataV = closeDataMock.map(v => v.closing_price);
+  const closePrice = await knex.select('closing_price').from('stocks').where('company_name', symbol);
 
-  minmaxScaler.fit(closeDataV);
+  let closePriceV = closePrice.map(v => v.closing_price);
 
-  // FIX THIS
-  const result = minmaxScaler.transform([[980.98], [982.56], [989.8], [978.36], [981.34], [984.09], [977.83]]);
+  minmaxScaler.fit(closePriceV);
+
+  const result = minmaxScaler.transform([[closeDataPriceOnly[0]], [closeDataPriceOnly[1]], [closeDataPriceOnly[2]], [closeDataPriceOnly[3]], [closeDataPriceOnly[4]], [closeDataPriceOnly[5]], [closeDataPriceOnly[6]]]);
 
   const tensor = tf.tensor3d([result]);
 
@@ -107,8 +129,8 @@ const root = {
     const returnedData = await getFromDateRange(stockSymbol,beginDate, endDate);
     return returnedData;
   },
-  fromPrediction: async ({stockSymbol, closingPrice}) => {
-    const returnedData = await getFromPredictionModel(stockSymbol, closingPrice);
+  fromPrediction: async ({stockSymbol}) => {
+    const returnedData = await getFromPredictionModel(stockSymbol);
     return returnedData;
   }
 };
