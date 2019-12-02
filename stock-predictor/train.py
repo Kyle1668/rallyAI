@@ -18,25 +18,26 @@ from keras.models import Sequential
 from keras.layers import LSTM,Dense,Dropout
 import matplotlib.pyplot as plt
 
-
+# Query company data from database
 def queryData(companyCode):
+    connection = None
+    closeData = None
     try:
         connection = psycopg2.connect(user="",
                                         password="",
                                         host="",
                                         port="",
-                                        database="postgres_db")
+                                        database="")
         cursor = connection.cursor()
-        postgreSQL_select_Query  = "select * from stocks WHERE company_name = " + companyCode
-        cursor.execute(postgreSQL_select_Query)
-        companyData = cursor.fetchall()
+        postgreSQL_select_Query  = "SELECT closing_price FROM stocks WHERE company_name = '{}'".format(companyCode)
+        closeData = pd.read_sql(postgreSQL_select_Query, connection)
     except(Exception, psycopg2.Error) as error:
         print (error)
     finally:
         if (connection):
             cursor.close()
             connection.close()
-    return (companyData)
+    return (closeData)
 
 # Process data into 7 day look back slices
 def processData(data,lb):
@@ -47,21 +48,12 @@ def processData(data,lb):
     return np.array(X),np.array(Y)
 
 def main():
-
-    print ("Current Company Code: " + str(sys.argv[1]))
     companyCode = str(sys.argv[1])
 
-    # Query company data from database
-    # [(company_name, market_date, closing_price, opening_price, highest_price, lowest_price, volume_in_millions, perent_change), ...]
-    companyData = queryData(companyCode)
+    # Retrieve Data
+    closeData = queryData(companyCode)
 
-    # format company data
-    # Code Here
-    # closeData = 
-
-    # data = pd.read_csv('./input/all_stocks_5yr.csv')
-    # closeData = data[data['Name']== companyCode].close
-
+    # Shape Data
     closeData = closeData.values.reshape(closeData.shape[0], 1)
     scl = MinMaxScaler()
     closeData = scl.fit_transform(closeData)
