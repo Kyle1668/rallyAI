@@ -8,6 +8,7 @@
 # * https://towardsdatascience.com/recurrent-neural-networks-by-example-in-python-ffd204f99470
 # * https://towardsdatascience.com/choosing-the-right-hyperparameters-for-a-simple-lstm-using-keras-f8e9ed76f046
 # Library for manipulating, formatting, and cleaning the data
+import psycopg2
 import sys
 import os
 import pandas as pd
@@ -16,6 +17,27 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dense,Dropout
 import matplotlib.pyplot as plt
+
+# Query company data from database
+def queryData(companyCode):
+    connection = None
+    closeData = None
+    try:
+        connection = psycopg2.connect(user="",
+                                        password="",
+                                        host="",
+                                        port="",
+                                        database="")
+        cursor = connection.cursor()
+        postgreSQL_select_Query  = "SELECT closing_price FROM stocks WHERE company_name = '{}'".format(companyCode)
+        closeData = pd.read_sql(postgreSQL_select_Query, connection)
+    except(Exception, psycopg2.Error) as error:
+        print (error)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+    return (closeData)
 
 # Process data into 7 day look back slices
 def processData(data,lb):
@@ -26,12 +48,12 @@ def processData(data,lb):
     return np.array(X),np.array(Y)
 
 def main():
-    # Need to read data from Joseph's database
-    print ("Current Company Code: " + str(sys.argv[1]))
     companyCode = str(sys.argv[1])
 
-    data = pd.read_csv('./input/all_stocks_5yr.csv')
-    closeData = data[data['Name']== companyCode].close
+    # Retrieve Data
+    closeData = queryData(companyCode)
+
+    # Shape Data
     closeData = closeData.values.reshape(closeData.shape[0], 1)
     scl = MinMaxScaler()
     closeData = scl.fit_transform(closeData)
@@ -61,7 +83,6 @@ def main():
     pred = []
     for i in range(250):
         Xt = model.predict(X_test[i].reshape(1,7,1))
-        # print('predicted:{0}, actual:{1}'.format(scl.inverse_transform(Xt),scl.inverse_transform(y_test[i].reshape(-1,1))))
         pred.append(scl.inverse_transform(Xt))
         act.append(scl.inverse_transform(y_test[i].reshape(-1,1)))
     result_df = pd.DataFrame({'pred':list(np.reshape(pred, (-1))),'act':list(np.reshape(act, (-1)))})
@@ -75,11 +96,8 @@ def main():
         os.mkdir('./modelBin/' + companyCode)
     except:
         pass
-    model_json = model.to_json()
-    with open('./modelBin/' + companyCode + '/model.json','w+') as json_file:
-        json_file.write(model_json)
-        json_file.close()
-    model.save_weights('./modelBin/' + companyCode + '/model.h5')
+    model.save('./modelBin/' + companyCode + '/model.h5')
+    os.system('tensorflowjs_converter --input_format keras ./modelBin/{}/model.h5 ./modelBin/{}/'.format(companyCode, companyCode))
 
 if __name__ == '__main__':
     main()
