@@ -17,17 +17,21 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM,Dense,Dropout
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
 
 # Query company data from database
 def queryData(companyCode):
+    environment = os.environ.get('ENV')
+    if (environment == 'dev'):
+        load_dotenv()
     connection = None
     closeData = None
     try:
-        connection = psycopg2.connect(user="",
-                                        password="",
-                                        host="",
-                                        port="",
-                                        database="")
+        connection = psycopg2.connect(user=os.environ.get('DB_USER'),
+                                        password=os.environ.get('DB_PASS'),
+                                        host=os.environ.get('DB_HOST'),
+                                        port=os.environ.get('DB_PORT'),
+                                        database=os.environ.get('DB_NAME'))
         cursor = connection.cursor()
         postgreSQL_select_Query  = "SELECT closing_price FROM stocks WHERE company_name = '{}'".format(companyCode)
         closeData = pd.read_sql(postgreSQL_select_Query, connection)
