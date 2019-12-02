@@ -38,6 +38,7 @@ def init_chrome_driver():
     options.add_argument('--disable-dev-shm-usage')
     return webdriver.Chrome(options=options)
 
+
 def load_historic_data_table():
     def getTenYearTimeSpanString():
         currentDate = datetime.now()
@@ -50,43 +51,44 @@ def load_historic_data_table():
             currentDate.strftime("%m/%d/%Y") + \
             "'"
         return timeSpanStr
-    
+
     # select data spanning the past 10 years
     historicDates = getTenYearTimeSpanString()
     jsSetPicker = "document.getElementById('picker').value = "
     jsSetPicker = jsSetPicker + historicDates
-    driver.execute_script(jsSetPicker) # sets the values
+    driver.execute_script(jsSetPicker)  # sets the values
 
     # apply date selection to date picker
     selectPicker = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.ID, "widgetField")))
-    selectPicker.click() # reveals the date picker
+    selectPicker.click()  # reveals the date picker
 
     applyButton = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.ID, "applyBtn")))
 
     retries = 5
     while(retries > 0):
-        try: # keep trying to click apply
+        try:  # keep trying to click apply
             applyButton.click()
             retries = 0
         except ElementClickInterceptedException:
             print("apply button wasn't clicked")
             retries -= 1
 
-def init_company_entry(company_name):
-    company_entry = {}
-    company_entry["company_name"] = company_name
-    company_entry["market_date"] = ""
-    company_entry["closing_price"] = ""
-    company_entry["opening_price"] = ""
-    company_entry["highest_price"] = ""
-    company_entry["lowest_price"] = ""
-    company_entry["volume_in_millions"] = ""
-    company_entry["percent_change"] = ""
-    return company_entry
 
 def parse_table_rows(rows, company_name):
+    def init_company_entry(company_name):
+        company_entry = {}
+        company_entry["company_name"] = company_name
+        company_entry["market_date"] = ""
+        company_entry["closing_price"] = ""
+        company_entry["opening_price"] = ""
+        company_entry["highest_price"] = ""
+        company_entry["lowest_price"] = ""
+        company_entry["volume_in_millions"] = ""
+        company_entry["percent_change"] = ""
+        return company_entry
+
     company_entries = list()
     for row in rows:
         company_entry = init_company_entry(company_name)
@@ -156,14 +158,15 @@ def crawl_company_urls(driver, sp500Urls):
         print("company name      : ", company_name)
         print("historic data url : ", companyUrl, "\n")
 
-        driver.get(companyUrl) # navigate to company url
+        driver.get(companyUrl)  # navigate to company url
         load_historic_data_table()
         company_entries = crawl_historic_data(driver, company_name)
 
         for entry in company_entries:
             writer.writerow(entry)
-        
+
     csv_file.close()
+
 
 if __name__ == "__main__":
 
