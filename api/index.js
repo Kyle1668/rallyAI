@@ -37,7 +37,7 @@ const schema = buildSchema(`
   }
 
   type PredictiveStock {
-    symbol: String
+    company_name: String
     predicted_price: Float
     date: String
   }
