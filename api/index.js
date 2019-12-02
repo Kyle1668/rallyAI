@@ -52,6 +52,9 @@ const schema = buildSchema(`
 
 const getDataFromSymbol = async (symbol) => {
   const data = await knex('stocks').where('company_name', symbol);
+  if (data.length == 0) {
+    throw new Error(`${symbol} isn't apart of S&P 500.`);
+  }
   return data;
 }
 
@@ -59,6 +62,9 @@ const getFromDateRange = async (symbol, beginDate, endDate) => {
   const data = await knex('stocks')
     .where('symbol', symbol)
     .whereBetween('market_date', [beginDate, endDate]);
+  if (data.length == 0) {
+    throw new Error(`${symbol} isn't apart of S&P 500.`);
+  }
   return data;
 }
 
@@ -90,8 +96,6 @@ const getFromPredictionModel = async (symbol, closingPrice) => {
 
   return { 'predicted_price': predictedVal[0].toFixed(2) }
 }
-
-
 
 // Root resolver
 const root = {
