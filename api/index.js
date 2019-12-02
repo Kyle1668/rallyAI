@@ -99,8 +99,10 @@ const getFromPredictionModel = async (symbol) => {
 
   // array manipulations for getting 7 day
   const closeDataSortedDates = (closeData.sort((a,b)=> new Date(b.market_date) - new Date(a.market_date))).slice(0,7);
-  const closeDataPriceOnly = closeDataSortedDates.map(v => v.closing_price).reverse();
 
+  console.log(closeDataSortedDates);
+
+  const closeDataPriceOnly = closeDataSortedDates.map(v => v.closing_price).reverse();
 
   const closePrice = await knex.select('closing_price').from('stocks').where('company_name', symbol);
 
@@ -116,7 +118,7 @@ const getFromPredictionModel = async (symbol) => {
 
   const predictedVal = minmaxScaler.inverse_transform(Object.values(prediction.dataSync()));
 
-  return { 'predicted_price': predictedVal[0].toFixed(2) }
+  return { 'predicted_price': predictedVal[0].toFixed(2), 'company_name': symbol }
 }
 
 // Root resolver

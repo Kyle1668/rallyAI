@@ -2,8 +2,9 @@
 # Created by https://www.gitignore.io/api/git,vim,node,data,linux,macos,python,dotenv,windows,database,jetbrains,terraform,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=git,vim,node,data,linux,macos,python,dotenv,windows,database,jetbrains,terraform,visualstudio,visualstudiocode
 
+.vscode
+
 ### Data ###
-*.csv
 *.dat
 *.efx
 *.crc

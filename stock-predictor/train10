@@ -1,0 +1,17 @@
+#!/bin/bash
+declare -a companyName
+companyName=(
+AMD
+Comcast
+Pfizer
+Intel
+Apple
+Micron
+Microsoft
+Cisco
+Facebook
+AutoZone)
+for company in ${companyName[@]}
+do
+    python3.6 train.py $company
+done
