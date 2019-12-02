@@ -2,7 +2,8 @@ import express from 'express';
 import express_graphql from 'express-graphql';
 import { buildSchema } from 'graphql';
 import dotenv from 'dotenv';
-import * as tf from '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs-node';
+import { MinMaxScaler } from 'machinelearn/preprocessing';
 
 // Enviroment variables
 if (process.env.ENV === "dev") {
@@ -50,7 +51,7 @@ const schema = buildSchema(`
 `);
 
 const getDataFromSymbol = async (symbol) => {
-  const data = await knex('stocks').where('symbol', symbol);
+  const data = await knex('stocks').where('company_name', symbol);
   return data;
 }
 
@@ -64,12 +65,33 @@ const getFromDateRange = async (symbol, beginDate, endDate) => {
 // Predictive model
 const getFromPredictionModel = async (symbol, closingPrice) => {
 
-  // const prediction = // call the model
-  const model = await tf.loadLayersModel(`./stock-predictor/modelBin/${symbol}/model.json`);
+  const model = await tf.loadLayersModel("file:///Users/joseph/Desktop/School/cse115a/rallyAI/stock-predictor/modelBin/AutoZone/model.json");
+  
+  const minmaxScaler = new MinMaxScaler({ featureRange: [0,1] });
 
-   // return prediction
-  return model.predict(closingPrice);
+  // Official Function for Database
+  // const closeData = await knex.select('closing_price').from('stocks').where('company_name', symbol);
+
+  // Mock function
+  const closeDataMock = await knex.select('closing_price').from('stocks').where('company_name', 'AutoZone');
+
+  let closeDataV = closeDataMock.map(v => v.closing_price);
+
+  minmaxScaler.fit(closeDataV);
+
+  // FIX THIS
+  const result = minmaxScaler.transform([[980.98], [982.56], [989.8], [978.36], [981.34], [984.09], [977.83]]);
+
+  const tensor = tf.tensor3d([result]);
+
+  const prediction = model.predict(tensor);
+
+  const predictedVal = minmaxScaler.inverse_transform(Object.values(prediction.dataSync()));
+
+  return { 'predicted_price': predictedVal[0].toFixed(2) }
 }
+
+
 
 // Root resolver
 const root = {
@@ -81,7 +103,7 @@ const root = {
     const returnedData = await getFromDateRange(stockSymbol,beginDate, endDate);
     return returnedData;
   },
-  fromPrediction: async ({stockSymbol}) => {
+  fromPrediction: async ({stockSymbol, closingPrice}) => {
     const returnedData = await getFromPredictionModel(stockSymbol, closingPrice);
     return returnedData;
   }
