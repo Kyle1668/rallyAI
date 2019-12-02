@@ -3,7 +3,6 @@
 # Edit at https://www.gitignore.io/?templates=git,vim,node,data,linux,macos,python,dotenv,windows,database,jetbrains,terraform,visualstudio,visualstudiocode
 
 ### Data ###
-*.csv
 *.dat
 *.efx
 *.gbr

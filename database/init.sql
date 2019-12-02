@@ -1,11 +1,11 @@
 CREATE TABLE stocks
 (
-    symbol VARCHAR (10) PRIMARY KEY,
-    company_name VARCHAR (50) NOT NULL,
-    market_date DATE NOT NULL,
-    closing_price REAL NOT NULL,
-    opening_price REAL,
-    highest_price REAL,
-    lowest_price REAL,
-    volume_in_millions VARCHAR(10)
+    company_name VARCHAR (20) NOT NULL,
+    market_date VARCHAR (20) NOT NULL,
+    closing_price FLOAT NOT NULL,
+    opening_price FLOAT,
+    highest_price FLOAT,
+    lowest_price FLOAT,
+    volume_in_millions VARCHAR(10),
+    percent_change VARCHAR(10)
 );

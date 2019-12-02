@@ -82,18 +82,17 @@ def generate_data_frame_from_csv(csv_file_path):
     """
     data_schema = [
         StructField("company_name", StringType(), True),
-        StructField("market_date", DateType(), True),
+        StructField("market_date", StringType(), True),
         StructField("closing_price", FloatType(), True),
         StructField("opening_price", FloatType(), True),
-        StructField("adj_close", FloatType(), True),
         StructField("highest_price", FloatType(), True),
         StructField("lowest_price", FloatType(), True),
-        StructField("volume_in_millions", StringType(), True),
-        StructField("percent_change", FloatType(), True)
+        StructField("volume", StringType(), True),
+        StructField("percent_change", StringType(), True)
     ]
 
     final_struct = StructType(fields=data_schema)
-    data_frame = spark.read.csv(csv_file_path, schema=final_struct)
+    data_frame = spark.read.csv(csv_file_path, header=True, schema=final_struct)
     data_frame.createOrReplaceTempView("stocks")
 
     return data_frame
@@ -120,9 +119,9 @@ if __name__ == "__main__":
     # Print the schema to the console
     data_frame.printSchema()
 
-    results = spark.sql(
-        "SELECT * FROM stocks WHERE symbol IS NOT  NULL AND date IS NOT NULL")
+    # Write to Postgres
     db_connection_cursor = init_postgres_connection()
-    write_dataframe_to_postgres(results, "stocks")
 
-    results.write.csv("model_training_data", mode="overwrite")
+    # Write to CSV
+    write_dataframe_to_postgres(data_frame, "stocks")
+    data_frame.write.csv("model_training_data", mode="overwrite")
