@@ -83,7 +83,6 @@ def main():
     pred = []
     for i in range(250):
         Xt = model.predict(X_test[i].reshape(1,7,1))
-        # print('predicted:{0}, actual:{1}'.format(scl.inverse_transform(Xt),scl.inverse_transform(y_test[i].reshape(-1,1))))
         pred.append(scl.inverse_transform(Xt))
         act.append(scl.inverse_transform(y_test[i].reshape(-1,1)))
     result_df = pd.DataFrame({'pred':list(np.reshape(pred, (-1))),'act':list(np.reshape(act, (-1)))})
@@ -97,11 +96,8 @@ def main():
         os.mkdir('./modelBin/' + companyCode)
     except:
         pass
-    model_json = model.to_json()
-    with open('./modelBin/' + companyCode + '/model.json','w+') as json_file:
-        json_file.write(model_json)
-        json_file.close()
-    model.save_weights('./modelBin/' + companyCode + '/model.h5')
+    model.save('./modelBin/' + companyCode + '/model.h5')
+    os.system('tensorflowjs_converter --input_format keras ./modelBin/{}/model.h5 ./modelBin/{}/'.format(companyCode, companyCode))
 
 if __name__ == '__main__':
     main()
