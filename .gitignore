@@ -5,7 +5,6 @@
 .vscode
 
 ### Data ###
-*.csv
 *.dat
 *.efx
 *.crc
