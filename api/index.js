@@ -2,6 +2,7 @@ import express from 'express';
 import express_graphql from 'express-graphql';
 import { buildSchema } from 'graphql';
 import dotenv from 'dotenv';
+import * as tf from '@tensorflow/tfjs';
 
 // Enviroment variables
 if (process.env.ENV === "dev") {
@@ -44,7 +45,7 @@ const schema = buildSchema(`
     error: Boolean
     fromSymbol(stockSymbol: String): [Stock]
     fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]
-    fromPrediction(stockSymbol: String): PredictiveStock
+    fromPrediction(stockSymbol: String, closingPrice: Float): PredictiveStock
   }
 `);
 
@@ -61,11 +62,13 @@ const getFromDateRange = async (symbol, beginDate, endDate) => {
 }
 
 // Predictive model
-const getFromPredictionModel = async (symbol) => {
+const getFromPredictionModel = async (symbol, closingPrice) => {
 
   // const prediction = // call the model
+  const model = await tf.loadLayersModel(`./stock-predictor/modelBin/${symbol}/model.json`);
 
-  // return prediction
+   // return prediction
+  return model.predict(closingPrice);
 }
 
 // Root resolver
@@ -79,7 +82,7 @@ const root = {
     return returnedData;
   },
   fromPrediction: async ({stockSymbol}) => {
-    const returnedData = await getFromPredictionModel(stockSymbol);
+    const returnedData = await getFromPredictionModel(stockSymbol, closingPrice);
     return returnedData;
   }
 };
