@@ -32,9 +32,37 @@ Once the API is completed, we’ll add authentication, API key registration, and
 
 ### Database
 
+#### info
+
+`database` contains the file for initialzing database with schema
+
 ### API
 
 ### Stock Predictor
+
+#### info
+
+stock-predictor contains one script that exports company stock predictor model: `train.py`
+`train.py` retrieves data from a Postgre database, trains a model based on specified
+company and exports the model using tensorflowJS-converter.
+
+#### dependencies and installation
+
+Python : version = 3.6
+
+`python3 -m pip install --user virtualenv`
+
+`python3 -m venv env`
+
+`pip3 install -r requirements.txt`
+
+#### usage
+
+##### train
+
+Run script below to export a model for a specified company name
+
+`python3.6 train.py [company name]`
 
 ### web-scraper
 
