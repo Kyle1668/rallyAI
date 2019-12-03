@@ -26,7 +26,6 @@ const knex = require('knex')({
 const schema = buildSchema(`
   type Stock {
     id: Int
-    symbol: String
     company_name: String
     market_date: String
     closing_price: Float
@@ -80,13 +79,13 @@ const getFromPredictionModel = async (symbol) => {
   }
   
   const companies = [ "AMD", "Comcast", "Pfizer",
-  "Intel",
-  "Apple",
-  "Micron",
-  "Microsoft",
-  "Cisco",
-  "Facebook",
-  "AutoZone"];
+    "Intel",
+    "Apple",
+    "Micron",
+    "Microsoft",
+    "Cisco",
+    "Facebook",
+    "AutoZone"];
 
   if (!companies.includes(symbol)) {
     throw new Error("Companies model hasn't been trained!");

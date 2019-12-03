@@ -34,6 +34,19 @@ Once the API is completed, we’ll add authentication, API key registration, and
 
 # API Usage
 
+## Installation
+
+To spin up the GraphQL server, make sure to have Node (i'm using v12.13.1) and NPM.
+
+`npm i`
+
+To install the necessary dependencies.
+
+`npm run start-dev`
+
+Start the server, which should be listening on PORT 3000.
+NOTE: Necessary enviroment variables (.env) file must be set.
+
 ## Query Syntax and Types
 
 For our public API application, there are many different queries to call from and there associated data values. The most basic type in this API will be the `Stock` and is described by:
