@@ -26,6 +26,7 @@ const knex = require('knex')({
 const schema = buildSchema(`
   type Stock {
     id: Int
+    symbol: String
     company_name: String
     market_date: String
     closing_price: Float
