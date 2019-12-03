@@ -36,8 +36,6 @@ Once the API is completed, we’ll add authentication, API key registration, and
 
 `database` contains the file for initialzing database with schema
 
-### API
-=======
 # API Usage
 
 ## Installation
