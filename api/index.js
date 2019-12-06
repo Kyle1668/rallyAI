@@ -45,9 +45,9 @@ const schema = buildSchema(`
   type Query {
     statusCode: Int
     error: Boolean
-    fromSymbol(stockSymbol: String): [Stock]
-    fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]
-    fromPrediction(stockSymbol: String): PredictiveStock
+    fromSymbol(companyName: String): [Stock]
+    fromDateRange(companyName: String, beginDate: String, endDate: String): [Stock]
+    fromPrediction(companyName: String): PredictiveStock
   }
 `);
 
@@ -154,7 +154,7 @@ const getFromPredictionModel = async (symbol) => {
   minmaxScaler.fit(closePriceV);
 
   const result = minmaxScaler.transform([[closeDataPriceOnly[0]], [closeDataPriceOnly[1]], [closeDataPriceOnly[2]], [closeDataPriceOnly[3]], [closeDataPriceOnly[4]], [closeDataPriceOnly[5]], [closeDataPriceOnly[6]]]);
-  
+
   const tensor = tf.tensor3d([result]);
 
   const prediction = model.predict(tensor);
@@ -166,16 +166,16 @@ const getFromPredictionModel = async (symbol) => {
 
 // Root resolver
 const root = {
-  fromSymbol: async ({stockSymbol}) => {
-    const returnedData = await getDataFromSymbol(stockSymbol);
+  fromSymbol: async ({companyName}) => {
+    const returnedData = await getDataFromSymbol(companyName);
     return returnedData;
   },
-  fromDateRange: async ({stockSymbol, beginDate, endDate}) => {
-    const returnedData = await getFromDateRange(stockSymbol,beginDate, endDate);
+  fromDateRange: async ({companyName, beginDate, endDate}) => {
+    const returnedData = await getFromDateRange(companyName,beginDate, endDate);
     return returnedData;
   },
-  fromPrediction: async ({stockSymbol}) => {
-    const returnedData = await getFromPredictionModel(stockSymbol);
+  fromPrediction: async ({companyName}) => {
+    const returnedData = await getFromPredictionModel(companyName);
     return returnedData;
   }
 };

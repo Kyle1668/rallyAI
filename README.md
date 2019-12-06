@@ -80,14 +80,14 @@ Another important type will be `PredictiveStock`
 ## Writing Queries
 There are 3 queries that are currently available in our API.
 
-1. `fromSymbol(stockSymbol: String): [Stock]`
-2. `fromDateRange(stockSymbol: String, beginDate: String, endDate: String): [Stock]`
-3. `fromPrediction(stockSymbol: String): PredictiveStock`
+1. `fromSymbol(companyName: String): [Stock]`
+2. `fromDateRange(companyName: String, beginDate: String, endDate: String): [Stock]`
+3. `fromPrediction(companyName: String): PredictiveStock`
 
 
 ```graphql
 {
-    fromSymbol(stockSymbol: "Microsoft") {
+    fromSymbol(companyName: "Microsoft") {
         company_name
         market_date
         closing_price
@@ -99,7 +99,7 @@ There are 3 queries that are currently available in our API.
 }
 ```
 
-`fromSymbol()` above query will produce the following JSON response (an array of Microsoft stock information), given the stockSymbol "Microsoft".
+`fromSymbol()` above query will produce the following JSON response (an array of Microsoft stock information), given the companyName "Microsoft".
 
 ```json
 {
@@ -140,7 +140,7 @@ There are 3 queries that are currently available in our API.
 
 ```graphql
 {
-  fromDateRange(stockSymbol: "Microsoft", beginDate: "Jul 28, 2019", endDate: "Jul 30, 2019") {
+  fromDateRange(companyName: "Microsoft", beginDate: "Jul 28, 2019", endDate: "Jul 30, 2019") {
         company_name
         market_date
         closing_price
@@ -185,7 +185,7 @@ There are 3 queries that are currently available in our API.
 
 ```graphql
 {
-    fromPrediction(stockSymbol: "Microsoft") {
+    fromPrediction(companyName: "Microsoft") {
         company_name
         predicted_price
     }
