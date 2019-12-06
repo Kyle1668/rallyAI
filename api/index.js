@@ -40,7 +40,6 @@ const schema = buildSchema(`
   type PredictiveStock {
     company_name: String
     predicted_price: Float
-    date: String
   }
 
   type Query {
@@ -155,7 +154,7 @@ const getFromPredictionModel = async (symbol) => {
   minmaxScaler.fit(closePriceV);
 
   const result = minmaxScaler.transform([[closeDataPriceOnly[0]], [closeDataPriceOnly[1]], [closeDataPriceOnly[2]], [closeDataPriceOnly[3]], [closeDataPriceOnly[4]], [closeDataPriceOnly[5]], [closeDataPriceOnly[6]]]);
-
+  
   const tensor = tf.tensor3d([result]);
 
   const prediction = model.predict(tensor);
