@@ -64,34 +64,54 @@ const getFromDateRange = async (symbol, beginDate, endDate) => {
   const data = await knex('stocks')
     .where('company_name', symbol)
     .whereBetween('market_date', [beginDate, endDate]);
-
+  
   if (data.length == 0) {
     throw new Error(`${symbol} isn't apart of S&P 500.`);
   }
+  
+  let beginMonth;
+  let beginDay;
+  let beginYear;
 
-  let beginMonth = beginDate.split(' ')[0];
-  let beginDay = (beginDate.split(' ')[1]).split(',')[0];
-  let beginYear = beginDate.split(' ')[2];
+  try {
+    beginMonth = beginDate.split(' ')[0];
+    beginDay = (beginDate.split(' ')[1]).split(',')[0];
+    beginYear = beginDate.split(' ')[2];
+  } catch(error) {
+    throw new Error(`Invalid date format, please enter a valid one in the format: MMM DD, YYYY`);
+  }
+
+  if (beginDay < 0 || beginDay > 31) {
+    throw new Error(`Incorrect date, please enter a valid one in the format: MMM DD, YYYY`);
+  }
 
   let beginDateConvert = new Date(`${beginMonth} ${beginDay} ${beginYear}`);
 
-  let endMonth = endDate.split(' ')[0];
-  let endDay = (endDate.split(' ')[1]).split(',')[0];
-  let endYear = endDate.split(' ')[2];
+  let endMonth;
+  let endDay;
+  let endYear;
+
+  try {
+      endMonth = endDate.split(' ')[0];
+      endDay = (endDate.split(' ')[1]).split(',')[0];
+      endYear = endDate.split(' ')[2];
+  } catch (error) {
+      throw new Error(`Invalid date format, please enter a valid one in the format: MMM DD, YYYY`);
+  }
+  if (endDay < 0 || endDay > 31) {
+      throw new Error(`Incorrect date, please enter a valid one in the format: MMM DD, YYYY`);
+  }
   
   let endDateConvert = new Date(`${endMonth} ${endDay} ${endYear}`);
 
   let filteredDates = data.filter(v => {
-
     let arrMonth = v.market_date.split(' ')[0];
     let arrDay  = (v.market_date.split(' ')[1]).split(',')[0];
     let arrYear = v.market_date.split(' ')[2];
-
     const newDate = new Date(`${arrMonth} ${arrDay} ${arrYear}`);
-
     return (newDate >= beginDateConvert && newDate <= endDateConvert);
-
   });
+
   return filteredDates;
 }
 
@@ -125,8 +145,6 @@ const getFromPredictionModel = async (symbol) => {
 
   // array manipulations for getting 7 day
   const closeDataSortedDates = (closeData.sort((a,b)=> new Date(b.market_date) - new Date(a.market_date))).slice(0,7);
-
-  console.log(closeDataSortedDates);
 
   const closeDataPriceOnly = closeDataSortedDates.map(v => v.closing_price).reverse();
 
