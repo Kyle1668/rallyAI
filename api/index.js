@@ -33,7 +33,8 @@ const schema = buildSchema(`
     opening_price: Float
     highest_price: Float
     lowest_price: Float
-    volume_in_millions: String
+    volume: String
+    percent_change: String
   }
 
   type PredictiveStock {
@@ -61,12 +62,37 @@ const getDataFromSymbol = async (symbol) => {
 
 const getFromDateRange = async (symbol, beginDate, endDate) => {
   const data = await knex('stocks')
-    .where('symbol', symbol)
+    .where('company_name', symbol)
     .whereBetween('market_date', [beginDate, endDate]);
+
   if (data.length == 0) {
     throw new Error(`${symbol} isn't apart of S&P 500.`);
   }
-  return data;
+
+  let beginMonth = beginDate.split(' ')[0];
+  let beginDay = (beginDate.split(' ')[1]).split(',')[0];
+  let beginYear = beginDate.split(' ')[2];
+
+  let beginDateConvert = new Date(`${beginMonth} ${beginDay} ${beginYear}`);
+
+  let endMonth = endDate.split(' ')[0];
+  let endDay = (endDate.split(' ')[1]).split(',')[0];
+  let endYear = endDate.split(' ')[2];
+  
+  let endDateConvert = new Date(`${endMonth} ${endDay} ${endYear}`);
+
+  let filteredDates = data.filter(v => {
+
+    let arrMonth = v.market_date.split(' ')[0];
+    let arrDay  = (v.market_date.split(' ')[1]).split(',')[0];
+    let arrYear = v.market_date.split(' ')[2];
+
+    const newDate = new Date(`${arrMonth} ${arrDay} ${arrYear}`);
+
+    return (newDate >= beginDateConvert && newDate <= endDateConvert);
+
+  });
+  return filteredDates;
 }
 
 // Predictive model
