@@ -18,7 +18,7 @@
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.8",
-    "knex": "^0.20.1",
+    "knex": "^2.4.0",
     "machinelearn": "^2.1.5",
     "pg": "^7.12.1",
     "tensorflow": "^0.7.0"
